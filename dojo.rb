@@ -1,35 +1,14 @@
 require "test/unit"
 
 class BuildQuery
-	def search_user(params=nil)
+	def search_user(params = nil)
 		if params
-
-			where = "where ";
-			first_clause = true;
-
-			params.each do |key, value|
-			 	if !first_clause
-			 		where += " and "
-			 	end
-
-			 	value.gsub! "'", "\\\\'"
-			 	where += key.to_s + " = '" + value.to_s + "'"
-
-			 	first_clause = false
-			end
-
-			query = "select * from user " + where + ";"
-			puts query
-			return query
-		else
-			query = "select * from user;"
-			puts query
-			return query
+			clauses = []
+			params.each { |k, v| clauses << "#{k} = '#{v.gsub("'", "\\\\'")}'" }
+			where = " where #{clauses.flatten.join(' and ')}" 
 		end
-
-		
+		"select * from user#{where};"
 	end
-	
 end
 
 class TestBuildQuery < Test::Unit::TestCase
